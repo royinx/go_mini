@@ -1,0 +1,14 @@
+#Build stage
+FROM golang:1.13.4-buster AS build-env
+COPY ./src /go/src/
+COPY . /src
+WORKDIR /src
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o app main.go
+
+#Output Stage
+FROM centurylink/ca-certs
+COPY dcgm_metrics.txt /dcgm_metrics.txt
+COPY --from=build-env /src/app /
+EXPOSE 8080
+CMD ["./app"]
+

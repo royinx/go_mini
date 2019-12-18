@@ -1,0 +1,14 @@
+#Build stage
+FROM golang:1.13.4-buster AS build-env
+COPY ./src /go/src/
+COPY . /src
+WORKDIR /src
+RUN go build -o app main.go
+
+#Output Stage
+FROM alpine
+WORKDIR /app
+COPY --from=build-env /src/app /app/
+EXPOSE 8080
+ENTRYPOINT ./app
+
